@@ -1,0 +1,278 @@
+These are the features to explain in the characterization of the data set.
+
+• Number of instances (#Inst)
+• Total number of attributes (#Att)
+• Number of real attributes (#Real)
+• Number of integer attributes (#Int)
+• Number of nominal attributes (#Nom)
+• Percentage of missing attributes (%missAtt)
+• Percentage of missing instances (%missInst)
+• Percentage of missing values (%missVal)
+• Percentage of instances belonging to the majority class (%Maj)
+• Percentage of instances belonging to the minority class (%Min)
+
+Description
+
+The described measures focus on the complexity of the class boundaries and estimate (I) the overlaps in the feature values from different classes, (II) the class separability, and (III) the geometry, topology, and density of manifolds.
+
+We used the library DCoL to calculate several measures of complexity of classification problems. These measures were originally proposed by Ho and Basu (2002). The following measures were calculated:
+
+1- Measures of overlaps in the feature values from different classes. This library provides routines
+that compute (1) the maximum Fisher’s discriminant ratio in both its original form defined
+by (Ho and Basu, 2002) and its directional-vector form (see the details in Section 2), (2) the
+overlap of the per-class bounding boxes, (3) the maximum (individual) feature efficiency, and
+(4) the collective feature efficiency2.
+
+2- Measures of class separability. This library provides routines that compute (1) the minimized 
+sum of the error distance of a linear classifier, (2) the training error of a linear classifier. (3)
+the fraction of points on the class boundary, (4) the ratio of average intra/inter class nearest
+neighbor distance, and (5) the leave-one-out error rate of the one-nearest neighbor classifier.
+
+3- Measures of geometry, topology, and density of manifolds. This library provides routines
+that compute (1) the nonlinearity of a linear classifier, (2) the nonlinearity of the one-nearest
+neighbor classifier, (3) the fraction of maximum covering spheres, and (4) the average number
+of points per dimension.
+
+The implementation of these complexity measures is based on the descriptions provided by
+Ho and Basu (2002) and Ho et al. (2006). The majority of these measures were initially designed
+for two-class data sets and were only applied to problems with continuous attributes3 (nominal or
+categorical attributes were numerically coded and treated as continuous). The latter restriction
+was because most of the complexity measures rely on distance functions between attributes. In
+our implementation, all the measures except for those based on linear discriminants and the
+Fisher’s discriminant in its directional-vector have been extended to deal with m-class data sets
+(m > 2), following the guidelines suggested by Ho et al. (2006). Furthermore, the most relevant
+distance functions for continuous and nominal attributes (Wilson and Martinez, 1997) have been
+implemented. In this way, we enable our library to deal with m-class data sets that contain
+nominal and/or continuous attributes.
+
+Data Complexity in Supervised Learning
+
+The complexity of classification problems (Basu and Ho, 2006) has been traditionally attributed
+to three main sources: (1) class ambiguity, (2) boundary complexity, and (3) sample sparsity and
+feature space dimensionality (Ho and Basu, 2002; Ho et al., 2006).
+
+Class ambiguity refers to the situation in which examples of different classes cannot be distinguished
+by the problem features. This could be due to a poor capability of the selected attributes
+to describe the concepts that (1) belong to different classes (i.e., the attributes of the problem are
+not sufficient to describe the concepts) or (2) belong to classes that are not well defined or have some relationship among them (e.g., having some instances that belong to two classes). This type
+of complexity cannot be solved at the classifier level, and data preprocessing may be needed to
+disambiguate the classes or the concepts. Data sets that contain classes that are ambiguous for
+some cases are said to have nonzero Bayes error, which sets a lower bound on the achievable error
+rate.
+
+Boundary complexity is related to the length of the description needed to describe the class.
+Given a complete sample, the Kolmogorov complexity (Kolmogorov, 1965; Li and Vitanyi, 1993)
+is defined as the length of the shortest program that describes the class boundary. Nonetheless,
+the Kolmogorov complexity is known to be incomputable (Maciejowski, 1979). Therefore, other
+estimates have been designed to analyze the class complexity, which mainly extract different geometrical
+indicators from the data set. Note, moreover, that the boundary complexity is closely
+related to the knowledge representation used by the learners. Thence, the type of representation
+used may impose a minimum bound of the classification error. For example, linear classifiers can
+hardly fit curved boundaries, and so, they would accumulate large errors on the class boundary;
+conversely, kernel-based methods could easily reproduce curved boundaries if the kernel has enough
+freedom to fit the boundary shape.
+
+Finally, sample sparsity and feature space dimensionality searches for characterizing complexities
+generated by regions with sparse samples in the feature space. Generalization over empty spaces
+of the training data set is largely arbitrary and depends mainly on how the classifier constructs the
+data model. The difficulty of dealing with sparse samples in high dimensional spaces have been
+addressed in many works (Devroye, 1988; Raudys and Jain, 1991; Vapnik, 1998), and some approaches
+expressly avoid evolving knowledge in empty regions in the feature space (Casillas et al.,
+2008).
+
+Among the different sources of problem difficulties, boundary complexity has received especial
+attention since it is the type of complexity that is more likely to be assessed. In particular,
+Ho and Basu (2002) designed a set of measures that extract different indicators that characterize
+the apparent geometrical complexity of the problem boundary. These measures can be divided into
+the following three categories:
+
+Measures of overlaps in the feature values from different classes. These measures focus on the
+capacity of the features to separate examples of different classes. For each individual attribute,
+they examine the range and spread of the values of instances of different classes and check the
+discriminant power of a single attribute or a combination of them. The library offers the following
+measures: (1) the maximum Fisher’s discriminant ratio (F1), (2) the overlap of the per-class
+bounding boxes (F2), and (3) the maximum (individual) feature efficiency (F3). In addition, we
+designed, and (4) the collective feature efficiency (F4), inspired by F3.
+
+Measures of class separability. These measures estimate to what extent the classes are separable
+by examining the length and the linearity of the class boundary. The library offers the following
+measures: (1) the minimized sum of the error distance of a linear classifier (L1), (2) the training
+error of a linear classifier (L2), (3) the fraction of points on the class boundary (N1), (4) the ratio
+of average intra/inter class nearest neighbor distance (N2), and (5) the leave-one-out error rate
+of the one-nearest neighbor classifier (N3).
+
+Measures of geometry, topology, and density of manifolds. These measures provide an indirect
+characterization of the class separability. They assume that the problem is composed of several
+manifolds spanned by each class. The shape, position, and interconnectedness of these manifolds
+give some hints on how well the classes are separated and on the density or population of each
+manifold. The library offers the following measures: (1) the nonlinearity of a linear classifier
+(L3), (2) the nonlinearity of the one-nearest neighbor classifier (N4), (3) the fraction of maximum
+covering spheres (T1), and (4) the average number of points per dimension (T2).
+
+These complexity measures are explained in more detail in the next subsection. For further
+information the reader is referred to (Ho and Basu, 2002; Ho et al., 2006).
+
+Maximum Fisher’s discriminant ratio (F1). A high value of Fisher’s discriminant ratio indicates that, at least, one of the attributes enables the learner to separate the examples of different classes with partitions that are parallel to an axis
+of the feature space. A low value of this measure does not imply that the classes are not linearly
+separable, but that they cannot be discriminated by hyperplanes parallel to one of the axis of the
+feature space.
+
+The overlap of the per-class bounding boxes (F2). This measure computes the overlap of the
+tails of distributions defined by the instances of each class.
+
+For m-class data sets (m > 2), we compute F2 for each pair of classes, get the absolute value of
+all them, an return the sum of all these values.
+A low value of this measure means that the attributes can discriminate the examples of different
+classes.
+
+The maximum (individual) feature efficiency (F3). This measure computes the discriminative
+power of individual features and returns the value of the attribute that can discriminate the
+largest number of training instances.
+For this purpose, the following heuristic is employed. For each attribute, we consider the overlapping
+region (i.e., the region where there are instances of both classes) and return the ratio of
+the number of instances that are not in this overlapping region to the total number of instances.
+Then, the maximum discriminative ratio is taken as measure F3.
+Note that a problem is easy if there exists one attribute for which the ranges of the values spanned
+by each class do not overlap (in this case, this would be a linearly separable problem).
+
+The collective feature efficiency (F4). This measure follows the same idea presented by F3, but
+now it considers the discriminative power of all the attributes (therefore, the collective feature
+efficiency).
+To compute the collective discriminative power, we apply the following procedure. First, we
+select the most discriminative attribute, that is, the attribute that can separate a major number
+of instances of one class. Then, all the instances that can be discriminated are removed from the
+data set, and the following most discriminative attribute (regarding the remaining examples) is
+selected. This procedure is repeated until all the examples are discriminated or all the attributes
+in the feature space are analyzed. Finally, the measure returns the proportion of instances that
+have been discriminated. Thus, it gives us an idea of the fraction of examples whose class could
+be correctly predicted by building separating hyperplanes that are parallel to one of the axis in
+the feature space.
+
+The minimized sum of the error distance of a linear classifier (L1). This measure evaluates to
+what extent the training data is linearly separable.
+For this purpose, it returns the sum of the difference between the prediction of a linear classifier
+and the actual class value. Different from Ho and Basu (2002), in our implementation we use
+a support vector machine (SVM) (Vapnik, 1995) with a linear kernel, which is trained with the
+sequential minimal optimization (SMO) algorithm (Platt, 1998) to build the linear classifier. We
+used this learner since the SMO algorithm provides an efficient training method, and the result
+is a linear classifier that separates the instances of two classes by means of a hyperplane.
+This measure is implemented only for two-class problems. A zero value of this measure indicates
+that the problem is linearly separable.
+
+The training error of a linear classifier (L2). This measure provides information about to what
+extent the training data is linearly separable. It builds the linear classifier as explained above and
+returns its training error. As before, the measure is only implemented for two-class data sets.
+
+The fraction of points on the class boundary (N1). This measure gives an estimate of the length
+of the class boundary.
+For this purpose, it builds a minimum spanning tree over the entire data set and returns the ratio
+of the number nodes of the spanning tree that are connected and belong to different classes to
+the total number of examples in the data set. If a node ni is connected with nodes of different
+classes, ni is counted only once.
+High values of this measure indicate that the majority of the points lay closely to the class
+boundary, and so, that it may be more difficult for the learner to define this class boundary
+accurately.
+
+The ratio of average intra/inter class nearest neighbor distance (N2). This measure compares
+the within-class spread with the distances to the nearest neighbors of other classes.
+For each input instance exi, we calculate the distance to its nearest neighbor within the class
+(intraDist(exi)) and the distance to its nearest neighbor of any other class (interDist(exi)). Then,
+the result is the ratio of the sum of the intra-class distances to the sum of the inter-class distances
+for each input example, i.e.,
+
+where Ne is the number of examples in the data set.
+Low values of this measure suggest that the examples of the same class lay closely in the feature
+space. High values indicate that the examples of the same class are disperse.
+
+The leave-one-out error rate of the one-nearest neighbor classifier (N3). The measure denotes
+how close the examples of different classes are. It returns the leave-one-out error rate of the
+one-nearest neighbor (the kNN classifier with k=1) learner.
+Low values of this measure indicate that there is a large gap in the class boundary.
+
+Measures of Geometry, Topology, and Density of Manifolds
+Having seen a set of measures that estimate the shape of the class boundary, we now explicate four
+measures that indirectly characterize the class separability by assuming that a class is made up of
+single and multiple manifolds that form the support of the distribution of the class.
+
+The nonlinearity of a linear classifier (L3). This measure implements a measure of nonlinearity
+proposed by Hoekstra and Duin (1996).
+Given the training data set, the method creates a test set by linear interpolation with random
+coefficients between pairs of randomly selected instances of the same class. Then, the measure
+returns the test error rate of the linear classifier (the support vector machine with linear kernel)
+trained with the original training set. The measure is sensitive to the smoothness of the classifier
+boundary and the overlap on the convex hull of the classes. This measure is implemented only
+for two-class data sets.
+
+The nonlinearity of the one-nearest neighbor classifier (N4). This measure creates a test set as
+proposed by L3 and returns the test error of the 1NN classifier.
+
+
+The fraction of maximum covering spheres (T1). This measure was originated in the work of
+Lebourgeois and Emptoz (1996), which described the shapes of class manifolds with the notion
+of adherence subset. Simply speaking, an adherence subset is a sphere centered on an example of
+the data set which is grown as much as possible before touching any example of another class.
+Therefore, an adherence subset contains a set of examples of the same class and cannot grow more
+without including examples of other classes. The measure considers only the biggest adherence
+subsets or spheres, removing all those that are included in others. Then, the measure returns the
+number of spheres normalized by the total number of points.
+
+The average number of points per dimension (T2). This measure returns the ratio of the number
+of examples in the data set to the number of attributes. It is a rough indicator of sparseness of
+the data set.
+
+Distance functions
+
+We extended the code to be able to efficiently deal with continuous and nominal/categorical attributes.
+For this reason, we implemented several distance functions which have been shown to
+enhance the behavior of instance-based classifiers (Wilson and Martinez, 1997).
+
+The combination of the normalized Euclidean distance for continuous attributes with the VDM distance for nominal
+attributes results in the Heterogeneous Value Difference Metric (HVDM) (Wilson and Martinez, 1997).
+
+
+Note:
+
+Originally, all the complexity measures were defined for two-class data sets. In our implementation,
+we extended all these measures, except for the three that involve the construction of a SVM and
+the directional-vector maximum Fisher’s discriminant ratio, to m-class data sets.
+
+References
+
+M. Basu and T. K. Ho, editors. Data complexity in pattern recognition. Springer, 2006.
+
+T. K. Ho and M. Basu. Complexity measures of supervised classification problems. IEEE Transactions
+on Pattern Analysis and Machine Intelligence, 24(3):289–300, 2002.
+
+T. K. Ho, M. Basu, and M. Law. Measures of geometrical complexity in classification problems. In
+Data Complexity in Pattern Recognition, pages 1–23. Springer, 2006.
+
+D. R. Wilson and T. R. Martinez. Improved heterogeneous distance functions. Journal of Artificial
+Intelligence Research, 6:1–34, 1997.
+
+Interpretation of measures
+
+No me parecen adecuadas para los datos nuestros. La conversión que se hace de datos nominales a enteros no es adecuada, al hacerlo se está asumiendo que los datos tienen un orden. La única solución es correr esta métrica solamente para los valores numéricos que tengo.
+
+F1 - Maximize
+F2 - Minimize
+F3- Maximize
+F4- Maximize
+
+No son adecuadas por ser métricas creadas para problemas binarios.
+
+- L1 Minimize
+- L2 Minimize
+
+No son adecuadas. Se crea un nuevo test set mediante una interpolación lineal entre pares de instancias seleccionadas aleatoriamente. No es convincente qué pasa en los datos nominales, en caso de que se creen valores intermedios entre los enteros correspondientes pues se estarían creando valores que no tienen lógica para el problema.
+
+L3 - Minimize 
+N4 - Minimize
+
+Estos son apropiados para nuestros datos ya que no requieren la conversión de los valores nominales. Se utiliza la distancia heterogenea que tiene en cuenta valores mixtos.
+
+N1 - Minimize
+N2- Minimize
+N3- Minimize
+
+T1- Minimize
+T2- Maximize
